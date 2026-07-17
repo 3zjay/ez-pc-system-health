@@ -151,29 +151,70 @@ function formatBytes(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+let cachedCpu = null;
+let cachedOsInfo = null;
+
+async function getStaticSystemInfo() {
+  if (!cachedCpu || !cachedOsInfo) {
+    const [cpu, osInfo] = await Promise.all([
+      si.cpu(),
+      si.osInfo()
+    ]);
+    cachedCpu = cpu;
+    cachedOsInfo = osInfo;
+  }
+  return { cpu: cachedCpu, osInfo: cachedOsInfo };
+}
+
+let cachedFsSize = null;
+let lastFsSizeScan = 0;
+
+async function getFsSizeCached() {
+  const now = Date.now();
+  if (cachedFsSize && (now - lastFsSizeScan) < 30000) {
+    return cachedFsSize;
+  }
+  cachedFsSize = await si.fsSize();
+  lastFsSizeScan = now;
+  return cachedFsSize;
+}
+
+let cachedBattery = null;
+let lastBatteryScan = 0;
+
+async function getBatteryCached() {
+  const now = Date.now();
+  if (cachedBattery && (now - lastBatteryScan) < 30000) {
+    return cachedBattery;
+  }
+  cachedBattery = await si.battery();
+  lastBatteryScan = now;
+  return cachedBattery;
+}
+
 /**
  * Get core system status telemetry
  */
 export async function getSystemTelemetry() {
   const [
-    cpu,
+    staticInfo,
     currentLoad,
     temp,
     mem,
     fsSize,
     battery,
-    osInfo,
     time
   ] = await Promise.all([
-    si.cpu(),
+    getStaticSystemInfo(),
     si.currentLoad(),
     si.cpuTemperature(),
     si.mem(),
-    si.fsSize(),
-    si.battery(),
-    si.osInfo(),
+    getFsSizeCached(),
+    getBatteryCached(),
     si.time()
   ]);
+
+  const { cpu, osInfo } = staticInfo;
 
   // Handle CPU Temp fallback
   let cpuTemp = temp.main;
