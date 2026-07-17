@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC Health Monitor & Diagnostics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+
+  <div class="app-layout">
+    <!-- Left Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          <circle cx="12" cy="12" r="10" stroke-dasharray="4 4" />
+        </svg>
+        <div class="brand-text">
+          <h1>HealthOS</h1>
+          <span>DIAGNOSTICS & TELEMETRY</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="tab-overview">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+          Overview
+        </button>
+        <button class="nav-item" data-tab="tab-processes">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Processes
+        </button>
+        <button class="nav-item" data-tab="tab-logs">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          Event Logs
+        </button>
+        <button class="nav-item" data-tab="tab-sniffer">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
+          </svg>
+          Storage Prism
+        </button>
+        <button class="nav-item" data-tab="tab-hwinfo">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 11l2 2 4-4"/>
+          </svg>
+          Detailed Sensors
+        </button>
+        <button class="nav-item text-glow-purple" data-tab="tab-ai">
+          <svg class="nav-icon purple-glow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 0 1 7.54 16.59l.46.41a2 2 0 0 1-2.83 2.83l-.06-.41A10 10 0 1 1 12 2zm0 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+          AI Advisor
+        </button>
+      </nav>
+
+      <!-- Sidebar Settings Footer -->
+      <div class="sidebar-footer">
+        <button class="settings-trigger" id="sidebar-settings-btn">
+          <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>AI Settings</span>
+        </button>
+        <div class="ai-key-status" id="sidebar-key-status">
+          <span class="status-dot pulsing" style="background-color: var(--accent-orange);"></span> Local Engine Active
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Main Header Bar -->
+      <header class="main-header">
+        <div class="header-left">
+          <h2 id="view-title">Dashboard Overview</h2>
+        </div>
+        <div class="header-right">
+          <div class="header-meta">
+            <div class="meta-item">
+              <span class="lbl">HOST</span>
+              <span class="val" id="header-hostname">Jaella.local</span>
+            </div>
+            <div class="meta-item">
+              <span class="lbl">UPTIME</span>
+              <span class="val" id="header-uptime">--:--</span>
+            </div>
+            <div class="meta-item">
+              <span class="lbl">STATUS</span>
+              <span class="val status-ok" id="header-status">
+                <span class="status-dot pulsing"></span> Good
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="panel-viewport">
+        
+        <!-- 1. Overview Panel -->
+        <div class="tab-panel active" id="tab-overview">
+          <div class="telemetry-grid">
+            <!-- CPU Monitor Card -->
+            <div class="card glass" id="card-cpu">
+              <div class="card-header">
+                <div class="card-title">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                    <path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/>
+                  </svg>
+                  <h3>Processor (CPU)</h3>
+                </div>
+                <span class="subtitle" id="cpu-brand">Detecting CPU...</span>
+              </div>
+              <div class="card-content">
+                <div class="telemetry-summary">
+                  <div class="circular-progress">
+                    <svg viewBox="0 0 100 100">
+                      <circle class="bg" cx="50" cy="50" r="40" />
+                      <circle class="fg" id="cpu-ring" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                    </svg>
+                    <div class="progress-val">
+                      <span id="cpu-load-val">0</span><span class="unit">%</span>
+                      <span class="label">USAGE</span>
+                    </div>
+                  </div>
+                  <div class="metric-stats">
+                    <div class="stat-row">
+                      <span class="label">Temperature</span>
+                      <span class="value" id="cpu-temp-val">-- °C</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="label">Cores (Threads)</span>
+                      <span class="value" id="cpu-cores-val">--</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="label">Average Speed</span>
+                      <span class="value" id="cpu-speed-val">-- GHz</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-container">
+                  <div class="chart-label-container">
+                    <span class="chart-title-lbl">CPU Usage History</span>
+                    <span class="chart-live-lbl">LIVE</span>
+                  </div>
+                  <svg class="sparkline-chart" id="cpu-chart" viewBox="0 0 300 80" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="cpu-gradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--accent-blue)" stop-opacity="0.4" />
+                        <stop offset="100%" stop-color="var(--accent-blue)" stop-opacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path class="chart-area" id="cpu-chart-area" fill="url(#cpu-gradient)" d="M0,80 L300,80 L300,80 Z" />
+                    <path class="chart-line" id="cpu-chart-line" stroke="var(--accent-blue)" stroke-width="2.5" fill="none" d="" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Memory (RAM) Monitor Card -->
+            <div class="card glass" id="card-memory">
+              <div class="card-header">
+                <div class="card-title">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 19h12M6 5h12M6 9h12M6 13h12M6 17h12M6 21h12M3 3v18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
+                  </svg>
+                  <h3>Memory (RAM)</h3>
+                </div>
+                <span class="subtitle">System Allocation Summary</span>
+              </div>
+              <div class="card-content">
+                <div class="telemetry-summary">
+                  <div class="circular-progress">
+                    <svg viewBox="0 0 100 100">
+                      <circle class="bg" cx="50" cy="50" r="40" />
+                      <circle class="fg" id="ram-ring" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                    </svg>
+                    <div class="progress-val">
+                      <span id="ram-load-val">0</span><span class="unit">%</span>
+                      <span class="label">ALLOCATED</span>
+                    </div>
+                  </div>
+                  <div class="metric-stats">
+                    <div class="stat-row">
+                      <span class="label">Used memory</span>
+                      <span class="value" id="ram-used-val">-- GB</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="label">Available memory</span>
+                      <span class="value" id="ram-free-val">-- GB</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="label">Total installed</span>
+                      <span class="value" id="ram-total-val">-- GB</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-container">
+                  <div class="chart-label-container">
+                    <span class="chart-title-lbl">Memory Usage History</span>
+                    <span class="chart-live-lbl">LIVE</span>
+                  </div>
+                  <svg class="sparkline-chart" id="ram-chart" viewBox="0 0 300 80" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="ram-gradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--accent-purple)" stop-opacity="0.4" />
+                        <stop offset="100%" stop-color="var(--accent-purple)" stop-opacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path class="chart-area" id="ram-chart-area" fill="url(#ram-gradient)" d="M0,80 L300,80 L300,80 Z" />
+                    <path class="chart-line" id="ram-chart-line" stroke="var(--accent-purple)" stroke-width="2.5" fill="none" d="" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Disk Storage Card -->
+            <div class="card glass" id="card-storage">
+              <div class="card-header">
+                <div class="card-title">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M21 12H3M12 3v18M7 8h.01M17 8h.01M7 16h.01M17 16h.01"/>
+                  </svg>
+                  <h3>Disk Volumes</h3>
+                </div>
+                <span class="subtitle">Storage Partitions & Sizes</span>
+              </div>
+              <div class="card-content" id="storage-container">
+                <div class="loading-spinner-container">
+                  <div class="spinner"></div>
+                  <span>Analyzing disks...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Network and Battery Card Group -->
+            <div class="card-group">
+              <div class="card glass" id="card-network">
+                <div class="card-header">
+                  <div class="card-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>
+                    </svg>
+                    <h3>Network Telemetry</h3>
+                  </div>
+                  <span class="subtitle" id="net-interface-lbl">Detecting connection...</span>
+                </div>
+                <div class="card-content">
+                  <div class="net-speeds">
+                    <div class="speed-box download">
+                      <svg class="speed-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                      </svg>
+                      <div class="speed-text">
+                        <span class="val" id="net-down-val">0.00 KB/s</span>
+                        <span class="lbl">DOWNLOAD</span>
+                      </div>
+                    </div>
+                    <div class="speed-box upload">
+                      <svg class="speed-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 19V5M5 12l7-7 7 7"/>
+                      </svg>
+                      <div class="speed-text">
+                        <span class="val" id="net-up-val">0.00 KB/s</span>
+                        <span class="lbl">UPLOAD</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="network-details">
+                    <div class="detail-item">
+                      <span class="lbl">IPv4 Address</span>
+                      <span class="val" id="net-ip">127.0.0.1</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="lbl">MAC Address</span>
+                      <span class="val" id="net-mac">00:00:00:00:00:00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Power Source -->
+              <div class="card glass" id="card-battery">
+                <div class="card-header">
+                  <div class="card-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="7" width="16" height="10" rx="2" />
+                      <path d="M22 11v2"/>
+                    </svg>
+                    <h3>Power Source</h3>
+                  </div>
+                  <span class="subtitle" id="battery-status-lbl">Calculating charge...</span>
+                </div>
+                <div class="card-content">
+                  <div class="battery-metric">
+                    <div class="battery-visual">
+                      <div class="battery-body">
+                        <div class="battery-level-fill" id="battery-fill" style="width: 0%"></div>
+                        <div class="battery-percent-overlay" id="battery-text">0%</div>
+                      </div>
+                      <div class="battery-terminal"></div>
+                    </div>
+                    <div class="battery-info">
+                      <div class="info-row">
+                        <span class="lbl">Power State</span>
+                        <span class="val font-highlight" id="battery-state">Discharging</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="lbl">Cycle Count</span>
+                        <span class="val" id="battery-cycles">--</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Processes Panel -->
+        <div class="tab-panel" id="tab-processes">
+          <div class="card glass flex-fill">
+            <div class="panel-actions">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <input type="text" id="proc-search" placeholder="Search processes by name or PID...">
+              </div>
+              <div class="sort-wrapper">
+                <label for="proc-sort">Sort by:</label>
+                <select id="proc-sort">
+                  <option value="cpu">CPU Load (%)</option>
+                  <option value="mem">Memory Usage (%)</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary btn-icon-only" id="proc-refresh-btn" title="Refresh Processes">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+              </button>
+            </div>
+            <div class="table-container margin-top">
+              <table class="data-table" id="processes-table">
+                <thead>
+                  <tr>
+                    <th>PID</th>
+                    <th>Process Name</th>
+                    <th>CPU (%)</th>
+                    <th>Memory (%)</th>
+                    <th class="actions-col">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="processes-body">
+                  <!-- Dynamically filled -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Event Logs Panel -->
+        <div class="tab-panel" id="tab-logs">
+          <div class="card glass flex-fill flex-col-layout">
+            <!-- Event Logs Diagnostic Header -->
+            <div class="log-report-summary" id="log-summary-card" style="display: none;">
+              <div class="summary-header">
+                <h3>Event Diagnostic Summary</h3>
+                <span class="badge badge-normal" id="log-status-badge">Healthy</span>
+              </div>
+              <div class="summary-stat-grid">
+                <div class="stat-item error-count">
+                  <span class="val" id="log-stat-errors">0</span>
+                  <span class="lbl">Critical Errors</span>
+                </div>
+                <div class="stat-item warning-count">
+                  <span class="val" id="log-stat-warnings">0</span>
+                  <span class="lbl">Warnings</span>
+                </div>
+                <div class="stat-item info-count">
+                  <span class="val" id="log-stat-info">0</span>
+                  <span class="lbl">Info Logs</span>
+                </div>
+              </div>
+              
+              <div class="incidents-container">
+                <h4>Detected Issues & Recommended Fixes</h4>
+                <div class="incidents-list" id="log-incidents-list">
+                  <!-- Generated dynamically in index.js -->
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-actions flex-wrap">
+              <div class="search-input-wrapper flex-grow">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <input type="text" id="log-search" placeholder="Search event description, subsystem or source...">
+              </div>
+              <div class="select-wrapper">
+                <label for="log-level">Level:</label>
+                <select id="log-level">
+                  <option value="all">All Levels</option>
+                  <option value="error">Errors & Faults</option>
+                  <option value="warning">Warnings</option>
+                  <option value="info">Info / Debug</option>
+                </select>
+              </div>
+              <div class="select-wrapper">
+                <label for="log-limit">Limit:</label>
+                <select id="log-limit">
+                  <option value="50">50 entries</option>
+                  <option value="100">100 entries</option>
+                  <option value="200">200 entries</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" id="log-search-btn">Search Logs</button>
+            </div>
+            <div class="table-container margin-top">
+              <table class="data-table" id="logs-table">
+                <thead>
+                  <tr>
+                    <th style="width: 200px">Timestamp</th>
+                    <th style="width: 100px">Level</th>
+                    <th style="width: 220px">Source / Subsystem</th>
+                    <th>Event Message</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-body">
+                  <tr>
+                    <td colspan="4" class="text-center">Click 'Search Logs' to fetch event logs.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Storage Prism Panel -->
+        <div class="tab-panel" id="tab-sniffer">
+          <div class="card glass flex-fill flex-col-layout">
+            <div class="sniffer-controls">
+              <div class="search-input-wrapper path-input flex-grow">
+                <span class="path-prefix">Path:</span>
+                <input type="text" id="sniffer-path" placeholder="e.g. /Users/jaella/Documents or ~">
+              </div>
+              <button class="btn btn-primary" id="sniffer-scan-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                Scan Directory
+              </button>
+              <button class="btn btn-secondary" id="sniffer-up-btn" disabled>
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Up One Folder
+              </button>
+            </div>
+
+            <!-- Breadcrumbs Navigation -->
+            <div class="breadcrumbs-bar" id="sniffer-breadcrumbs">
+              <span class="breadcrumb-item active">No active scan</span>
+            </div>
+
+            <div class="sniffer-workspace">
+              <!-- Visual Treemap Container (Left side) -->
+              <div class="treemap-outer">
+                <div class="treemap-container" id="treemap-container">
+                  <div class="dir-item-placeholder">
+                    <h3>Visual Storage Prism Map</h3>
+                    <p>Enter a directory path and click "Scan Directory" to map files visually. Zoom and click tiles to navigate, or click delete icons to clean up large files.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Top Heavy Files & Categories (Right side) -->
+              <div class="sniffer-sidebar glass flex-col-layout" style="gap: 1.2rem; width: 320px;">
+                <div class="sidebar-sec">
+                  <h3 style="margin-bottom: 0.5rem;">File Type Distribution</h3>
+                  <div class="category-breakdown-box" id="prism-categories">
+                    <div class="text-center-muted" style="font-size: 0.8rem; color: var(--text-muted);">No distribution data</div>
+                  </div>
+                </div>
+                
+                <div class="sidebar-sec flex-fill flex-col-layout" style="min-height: 200px;">
+                  <h3 style="margin-bottom: 0.5rem;">Largest Files & Folders</h3>
+                  <div class="heavy-items-list flex-fill" id="sniffer-heavy-list">
+                    <div class="text-center" style="padding: 1rem 0; color: var(--text-muted); font-size: 0.8rem;">No active folder data</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.5 Detailed Sensors Panel -->
+        <div class="tab-panel" id="tab-hwinfo">
+          <div class="card glass flex-fill flex-col-layout">
+            <div id="hwinfo-setup-view" class="hwinfo-setup-alert" style="display: none">
+              <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+              </svg>
+              <h3>Hardware Sensors Reporting Not Active</h3>
+              <p id="hwinfo-error-msg">Querying HWiNFO requires Windows and HWiNFO application to be running with registry gadget exporting enabled.</p>
+              <div class="instructions-steps">
+                <h4>How to Enable HWiNFO Gadget Exporting (Windows):</h4>
+                <ol>
+                  <li>Open <strong>HWiNFO64</strong>.</li>
+                  <li>Click on <strong>Sensors</strong> to open the Sensor Status window.</li>
+                  <li>Click the gear icon (<strong>Settings</strong>) at the bottom right.</li>
+                  <li>Navigate to the <strong>HWiNFO Gadget</strong> tab.</li>
+                  <li>Select the sensors you want to monitor, and check <strong>"Report value in Gadget"</strong>.</li>
+                  <li>Click <strong>OK</strong>. The sensors will now stream to your dashboard in real-time.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div id="hwinfo-active-view" style="display: none; height: 100%;" class="flex-col-layout">
+              <div class="panel-actions">
+                <div class="search-input-wrapper">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                  </svg>
+                  <input type="text" id="hwinfo-search" placeholder="Search sensors (e.g. CPU, Fan, GPU)...">
+                </div>
+                <button class="btn btn-secondary" id="hwinfo-refresh-btn">
+                  Refresh Sensors
+                </button>
+              </div>
+
+              <div class="table-container margin-top flex-fill">
+                <table class="data-table" id="hwinfo-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 250px">Sensor Device</th>
+                      <th style="width: 250px">Label Name</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody id="hwinfo-body">
+                    <!-- Dynamically filled -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. AI Advisor Panel -->
+        <div class="tab-panel" id="tab-ai">
+          <div class="ai-advisor-layout">
+            <!-- Left Side: Audit Report -->
+            <div class="ai-report-panel card glass flex-col-layout">
+              <div class="panel-header">
+                <h3>System Health Diagnostics</h3>
+                <p>AI will analyze your hardware, memory allocation, storage distribution, and event logs to identify bottlenecks.</p>
+              </div>
+              <button class="btn btn-primary btn-audit" id="ai-audit-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  <circle cx="12" cy="12" r="10" stroke-dasharray="4 4" />
+                </svg>
+                Generate Diagnostics Audit
+              </button>
+              
+              <!-- Report Content Box -->
+              <div class="audit-report-container flex-fill flex-col-layout" id="ai-report-content">
+                <div class="report-placeholder">
+                  <svg class="icon large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M9 12h6M9 16h6M9 8h6"/>
+                  </svg>
+                  <h4>Diagnostic Report Pending</h4>
+                  <p>Click the button above to request a comprehensive system analysis.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side: Conversational Chat -->
+            <div class="ai-chat-panel card glass">
+              <div class="chat-header">
+                <h3>Assistant Helper</h3>
+                <span>Ask follow-up questions or request custom scripts</span>
+              </div>
+              
+              <!-- Chat Thread -->
+              <div class="chat-thread" id="ai-chat-thread">
+                <div class="chat-msg system">
+                  <div class="bubble">
+                    Hello! I am your PC Diagnostics assistant. I can interpret system errors, explain performance limits, or write CLI troubleshooting commands. How can I help you today?
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chat Input -->
+              <div class="chat-input-bar">
+                <input type="text" id="ai-chat-input" placeholder="Type a diagnostics query (e.g. explain my event log errors)..." disabled>
+                <button class="btn btn-primary" id="ai-chat-send" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. System Cleanup Panel (Now accessed through Sidebar or card buttons if needed, but keeping it inside logs/extra space) -->
+        <div class="tab-panel" id="tab-cleanup">
+          <div class="card glass flex-fill">
+            <div class="cleanup-layout">
+              <div class="cleanup-controls">
+                <h2>Temp Storage Cleaner</h2>
+                <p class="description">
+                  Safely remove browser, package manager, and operating system cache files to reclaim space. Standard system locks will prevent deletion of active files automatically.
+                </p>
+                <div class="cleanup-buttons">
+                  <button class="btn btn-primary" id="cleanup-scan-btn">Scan Temp Files</button>
+                  <button class="btn btn-danger" id="cleanup-clean-btn" disabled>Clean Selected Cache</button>
+                </div>
+                <div class="status-summary-box glass" id="cleanup-summary-card" style="display: none">
+                  <div class="total-cleanup-val" id="cleanup-total-size">0.00 MB</div>
+                  <div class="total-cleanup-lbl">TOTAL SCAN SIZE FOUND</div>
+                </div>
+              </div>
+              <div class="cleanup-details-panel">
+                <h3>Directory Breakdown</h3>
+                <div class="directories-list" id="cleanup-dirs-list">
+                  <div class="dir-item-placeholder">Click "Scan Temp Files" to calculate caches.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal (Gemini API Key configuration) -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <h3>AI Advisor Configuration</h3>
+        <button class="modal-close" id="settings-close-btn">&times;</button>
+      </div>
+      <div class="modal-content">
+        <p class="description">To enable cloud AI system diagnostics, enter your Gemini API Key. Alternatively, start <strong>Ollama</strong> locally on port 11434 (fully free local LLMs) or operate completely offline using the built-in <strong>Heuristics Expert Engine</strong>.</p>
+        <div class="form-group">
+          <label for="settings-key-input">Gemini API Key (Optional)</label>
+          <input type="password" id="settings-key-input" placeholder="AIzaSy...">
+        </div>
+        <div class="settings-actions">
+          <button class="btn btn-secondary" id="settings-cancel-btn">Cancel</button>
+          <button class="btn btn-primary" id="settings-save-btn">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="index.js"></script>
+</body>
+</html>

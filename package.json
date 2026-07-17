@@ -1,0 +1,32 @@
+{
+  "name": "healthos",
+  "version": "1.0.0",
+  "description": "A cross-platform, real-time system health monitoring and diagnostics dashboard. Runs locally in your browser — no cloud, no accounts.",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "keywords": [
+    "system-monitor",
+    "health-dashboard",
+    "cpu-monitor",
+    "disk-usage",
+    "diagnostics",
+    "telemetry",
+    "nodejs",
+    "cross-platform"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "open": "^10.1.0",
+    "systeminformation": "^5.23.5"
+  }
+}
