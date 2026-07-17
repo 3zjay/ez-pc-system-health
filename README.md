@@ -144,17 +144,31 @@ sudo npm start
 
 ### 🪟 Windows
 
-**Run Command Prompt or PowerShell as Administrator** for full hardware sensor access.
+**The easiest way — one script does everything:**
 
-1. Right-click **Command Prompt** or **PowerShell** → `Run as Administrator`
-2. Navigate to the project folder and run:
+> ✅ Checks for Node.js, installs it if missing  
+> ✅ Checks for Git, installs it if missing  
+> ✅ Runs `npm install` automatically  
+> ✅ Launches the app and opens your browser  
 
-```cmd
-npm start
-```
+**Option A — Double-click (simplest):**
+1. Download / clone the repo
+2. Double-click **`setup.bat`**
+3. Done — the dashboard opens at `http://localhost:4000`
 
-**If temperature shows N/A:**
-- Download and run [OpenHardwareMonitor](https://openhardwaremonitor.org/) alongside EZ PC System Health — it exposes sensor data that `systeminformation` can then read.
+**Option B — PowerShell:**
+1. Right-click **`setup.ps1`** → **Run with PowerShell**
+   *(If blocked, open PowerShell and run:)*
+   ```powershell
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\setup.ps1
+   ```
+
+> Both scripts use **winget** (Windows Package Manager — built into Windows 10 21H1+ and all of Windows 11) to auto-install Node.js and Git.
+
+**If temperature sensors show N/A:**
+- Download and run [OpenHardwareMonitor](https://openhardwaremonitor.org/) *before* launching EZ PC System Health — it exposes sensor data that the app can read
+- Keep OpenHardwareMonitor running in the background
 
 **Windows Firewall:**
 - If prompted, click **Allow** to let Node.js use port 4000
