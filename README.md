@@ -146,7 +146,8 @@ sudo npm start
 
 **The easiest way — one script does everything:**
 
-> ✅ Checks for Node.js, installs it if missing  
+> ✅ Checks for Node.js, installs it if missing (via winget)  
+> ✅ Refreshes PATH automatically — no need to close and reopen the terminal  
 > ✅ Checks for Git, installs it if missing  
 > ✅ Runs `npm install` automatically  
 > ✅ Launches the app and opens your browser  
@@ -165,6 +166,35 @@ sudo npm start
    ```
 
 > Both scripts use **winget** (Windows Package Manager — built into Windows 10 21H1+ and all of Windows 11) to auto-install Node.js and Git.
+
+**Option C — Manual install (PowerShell / CMD):**
+
+If you prefer to install manually or the scripts don't work for you:
+
+```powershell
+# 1. Install Node.js LTS (skip if already installed)
+winget install --id OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements
+
+# 2. Open a NEW PowerShell/CMD window so Node.js is on your PATH, then:
+cd C:\path\to\ez-pc-system-health
+
+# 3. Install dependencies
+npm install
+
+# 4. Launch the app
+npm start
+```
+
+> **Important — PATH refresh:** After winget installs Node.js, the **current terminal session** won't see `node` or `npm` on the PATH yet.  
+> The setup scripts handle this automatically by re-reading the PATH from the Windows registry.  
+> If you are running commands manually, simply **open a new terminal window** after installation and run `npm install` / `npm start` from there.
+
+**Running the app in future sessions:**
+```powershell
+# Open PowerShell in the project folder, then:
+npm start
+# Dashboard opens at http://localhost:4000
+```
 
 **If temperature sensors show N/A:**
 - Download and run [OpenHardwareMonitor](https://openhardwaremonitor.org/) *before* launching EZ PC System Health — it exposes sensor data that the app can read

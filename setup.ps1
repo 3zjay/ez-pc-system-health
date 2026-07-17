@@ -31,34 +31,63 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
 Write-Host "  [OK] Windows Package Manager (winget) found." -ForegroundColor Green
 
 # ----------------------------------------------------------------
+# Helper: Refresh PATH in the current session after winget installs
+# ----------------------------------------------------------------
+function Refresh-Path {
+    $machinePath = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+    $userPath    = [System.Environment]::GetEnvironmentVariable("PATH", "User")
+    $env:PATH    = "$machinePath;$userPath"
+}
+
+# ----------------------------------------------------------------
 # STEP 3 - Check / Install Node.js
 # ----------------------------------------------------------------
+$nodeExe = "C:\Program Files\nodejs\node.exe"
+$npmCmd  = "C:\Program Files\nodejs\npm.cmd"
+
+# Try PATH first, then the well-known install location
 $nodeCmd = Get-Command node -ErrorAction SilentlyContinue
+if (-not $nodeCmd -and (Test-Path $nodeExe)) { $nodeCmd = @{ Source = $nodeExe } }
 
 if (-not $nodeCmd) {
     Write-Host ""
-    Write-Host "  [..] Node.js not found. Installing LTS version..." -ForegroundColor Yellow
+    Write-Host "  [..] Node.js not found. Installing LTS version via winget..." -ForegroundColor Yellow
     winget install --id OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements
-    Write-Host ""
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "  [!] winget install failed. Install Node.js manually: https://nodejs.org/en/download" -ForegroundColor Red
+        Read-Host "  Press Enter to exit"
+        exit 1
+    }
     Write-Host "  [OK] Node.js installed." -ForegroundColor Green
-    Write-Host "  [!]  Please CLOSE this window and run setup.ps1 again" -ForegroundColor Yellow
-    Write-Host "       so Node.js is available in your PATH." -ForegroundColor Yellow
-    Read-Host "  Press Enter to exit"
-    exit 0
+    Refresh-Path
+    # Verify it is now reachable
+    if (-not (Test-Path $nodeExe)) {
+        Write-Host "  [!] Node.js binary not found at expected path after install." -ForegroundColor Red
+        Write-Host "      Please CLOSE this window and re-run setup.ps1." -ForegroundColor Yellow
+        Read-Host "  Press Enter to exit"
+        exit 0
+    }
 } else {
-    $nodeVersion = (node -v)
-    $nodeMajor = [int]($nodeVersion -replace 'v(\d+)\..*','$1')
+    $nodeVersion = (& $nodeExe -v 2>$null)
+    if (-not $nodeVersion) { $nodeVersion = (node -v 2>$null) }
+    $nodeMajor   = [int]($nodeVersion -replace 'v(\d+)\..*','$1')
     Write-Host "  [OK] Node.js found: $nodeVersion" -ForegroundColor Green
 
     if ($nodeMajor -lt 18) {
         Write-Host ""
         Write-Host "  [!] Node.js $nodeVersion is outdated (need v18+). Upgrading..." -ForegroundColor Yellow
         winget install --id OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements
-        Write-Host "  [!]  Please CLOSE and re-run setup.ps1 after the upgrade." -ForegroundColor Yellow
-        Read-Host "  Press Enter to exit"
-        exit 0
+        Refresh-Path
+        Write-Host "  [OK] Node.js upgraded." -ForegroundColor Green
     }
 }
+
+# Ensure we always use the full path if the session PATH is stale
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+    Refresh-Path
+}
+$resolvedNode = if (Get-Command node -ErrorAction SilentlyContinue) { "node" } else { $nodeExe }
+$resolvedNpm  = if (Get-Command npm  -ErrorAction SilentlyContinue) { "npm"  } else { $npmCmd  }
 
 # ----------------------------------------------------------------
 # STEP 4 - Check / Install Git
@@ -67,10 +96,8 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Host ""
     Write-Host "  [..] Git not found. Installing..." -ForegroundColor Yellow
     winget install --id Git.Git --silent --accept-package-agreements --accept-source-agreements
+    Refresh-Path
     Write-Host "  [OK] Git installed." -ForegroundColor Green
-    Write-Host "  [!]  Please CLOSE and re-run setup.ps1." -ForegroundColor Yellow
-    Read-Host "  Press Enter to exit"
-    exit 0
 } else {
     $gitVersion = (git --version)
     Write-Host "  [OK] Git found: $gitVersion" -ForegroundColor Green
@@ -81,7 +108,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 # ----------------------------------------------------------------
 Write-Host ""
 Write-Host "  [..] Installing project dependencies..." -ForegroundColor Yellow
-npm install
+& $resolvedNpm install
 if ($LASTEXITCODE -ne 0) {
     Write-Host "  [!] npm install failed. Check your internet connection." -ForegroundColor Red
     Read-Host "  Press Enter to exit"
@@ -109,4 +136,4 @@ Write-Host "  [..] Launching EZ PC System Health..." -ForegroundColor Cyan
 Write-Host "       Dashboard: http://localhost:4000" -ForegroundColor White
 Write-Host "       Press Ctrl+C to stop." -ForegroundColor Gray
 Write-Host ""
-npm start
+& $resolvedNode server/index.js
