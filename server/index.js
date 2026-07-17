@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import open from 'open';
 import fs from 'fs';
+import { exec } from 'child_process';
 import {
   getSystemTelemetry,
   getNetworkTelemetry,
@@ -175,10 +176,25 @@ function startServer(port) {
 
     // Automatically open browser, unless disabled by environment
     if (process.env.NODE_ENV !== 'test') {
-      try {
-        await open(localUrl);
-      } catch (e) {
-        console.log('Could not open browser automatically. Please open it manually.');
+      const startCmds = {
+        win32: `start "" "${localUrl}"`,
+        darwin: `open "${localUrl}"`,
+        linux: `xdg-open "${localUrl}"`
+      };
+      const cmd = startCmds[process.platform];
+      if (cmd) {
+        exec(cmd, (error) => {
+          if (error) {
+            console.log('Native browser launch failed, trying open library...');
+            open(localUrl).catch(() => {
+              console.log('Could not open browser automatically. Please open it manually.');
+            });
+          }
+        });
+      } else {
+        open(localUrl).catch(() => {
+          console.log('Could not open browser automatically. Please open it manually.');
+        });
       }
     }
   });
