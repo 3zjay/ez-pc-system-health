@@ -1,7 +1,7 @@
 {
-  "name": "healthos",
+  "name": "ez-pc-system-health",
   "version": "1.0.0",
-  "description": "A cross-platform, real-time system health monitoring and diagnostics dashboard. Runs locally in your browser — no cloud, no accounts.",
+  "description": "EZ PC System Health — A cross-platform, real-time system health monitoring and diagnostics dashboard. Runs locally in your browser — no cloud, no accounts.",
   "main": "server/index.js",
   "type": "module",
   "scripts": {
