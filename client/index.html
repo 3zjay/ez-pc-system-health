@@ -530,16 +530,17 @@
                 <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
               </svg>
               <h3>Hardware Sensors Reporting Not Active</h3>
-              <p id="hwinfo-error-msg">Querying HWiNFO requires Windows and HWiNFO application to be running with registry gadget exporting enabled.</p>
+              <p id="hwinfo-error-msg">Querying HWiNFO requires HWiNFO64 to be running on Windows with Shared Memory Support and Registry Gadget exporting enabled.</p>
               <div class="instructions-steps">
-                <h4>How to Enable HWiNFO Gadget Exporting (Windows):</h4>
+                <h4>How to Enable HWiNFO Sensor Exporting:</h4>
                 <ol>
-                  <li>Open <strong>HWiNFO64</strong>.</li>
-                  <li>Click on <strong>Sensors</strong> to open the Sensor Status window.</li>
-                  <li>Click the gear icon (<strong>Settings</strong>) at the bottom right.</li>
-                  <li>Navigate to the <strong>HWiNFO Gadget</strong> tab.</li>
-                  <li>Select the sensors you want to monitor, and check <strong>"Report value in Gadget"</strong>.</li>
-                  <li>Click <strong>OK</strong>. The sensors will now stream to your dashboard in real-time.</li>
+                  <li>Open <strong>HWiNFO64</strong>. (If you don't have it open, launch it from <code>C:\Program Files\HWiNFO64\HWiNFO64.exe</code>).</li>
+                  <li>In the welcome dialog, click the <strong>Settings</strong> button, check <strong>"Shared Memory Support"</strong>, and click <strong>OK</strong>. Then start HWiNFO.</li>
+                  <li>Alternatively, if HWiNFO is already running in your system tray, open the <strong>Sensors</strong> window and click the gear icon (<strong>Settings</strong>) at the bottom right.</li>
+                  <li>In the settings window, under the <strong>General / Safety</strong> tab, verify <strong>"Shared Memory Support"</strong> is checked.</li>
+                  <li>Navigate to the <strong>HWiNFO Gadget</strong> tab (usually the last tab).</li>
+                  <li>Select the individual sensor metrics you want to monitor (e.g. CPU temperature, Core loads, GPU temp), and check the box for <strong>"Report value in Gadget"</strong> for each.</li>
+                  <li>Click <strong>OK</strong> and keep HWiNFO64 running in the background. Refresh this page to view your live sensors.</li>
                 </ol>
               </div>
             </div>

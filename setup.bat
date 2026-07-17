@@ -106,6 +106,32 @@ if %errorlevel% neq 0 (
 )
 
 :: ----------------------------------------------------------------
+:: STEP 3b - Check / Install HWiNFO64 (for Windows detailed sensors)
+:: ----------------------------------------------------------------
+if exist "C:\Program Files\HWiNFO64\HWiNFO64.exe" (
+    echo  [OK] HWiNFO64 detected.
+    goto :HWINFO_DONE
+)
+
+:: Registry check fallback
+reg query "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" /s /f "HWiNFO" >nul 2>&1
+if %errorlevel% equ 0 (
+    echo  [OK] HWiNFO64 detected via registry.
+    goto :HWINFO_DONE
+)
+
+echo.
+echo  [..] HWiNFO64 not found. Installing via winget for detailed hardware sensors...
+winget install --id REALiX.HWiNFO --silent --accept-package-agreements --accept-source-agreements
+if %errorlevel% neq 0 (
+    echo  [!] HWiNFO64 installation failed. You can install it manually from: https://www.hwinfo.com/
+) else (
+    echo  [OK] HWiNFO64 installed successfully.
+)
+
+:HWINFO_DONE
+
+:: ----------------------------------------------------------------
 :: STEP 4 - Install npm dependencies
 :: ----------------------------------------------------------------
 echo.

@@ -196,9 +196,13 @@ npm start
 # Dashboard opens at http://localhost:4000
 ```
 
-**If temperature sensors show N/A:**
-- Download and run [OpenHardwareMonitor](https://openhardwaremonitor.org/) *before* launching EZ PC System Health — it exposes sensor data that the app can read
-- Keep OpenHardwareMonitor running in the background
+**If temperature and hardware sensors show N/A (Windows):**
+- **HWiNFO64** is automatically installed by `setup.ps1`/`setup.bat` if not already present.
+- Start **HWiNFO64** (usually found at `C:\Program Files\HWiNFO64\HWiNFO64.exe`).
+- Ensure **"Shared Memory Support"** is checked in HWiNFO64 Settings.
+- Open the HWiNFO64 Sensors window, click the gear icon (Settings) -> go to the **HWiNFO Gadget** tab -> select the sensors you want (e.g. CPU temp, GPU temp, fan speeds) and check **"Report value in Gadget"** for each of them.
+- Keep HWiNFO64 running in the background.
+- Alternatively, you can use [OpenHardwareMonitor](https://openhardwaremonitor.org/) as a fallback.
 
 **Windows Firewall:**
 - If prompted, click **Allow** to let Node.js use port 4000

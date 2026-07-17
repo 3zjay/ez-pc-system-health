@@ -104,6 +104,25 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 }
 
 # ----------------------------------------------------------------
+# STEP 4b - Check / Install HWiNFO64 (for Windows detailed sensors)
+# ----------------------------------------------------------------
+$hwinfoExe = "C:\Program Files\HWiNFO64\HWiNFO64.exe"
+$hasHWInfo = (Test-Path $hwinfoExe) -or (Get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match "HWiNFO" })
+
+if (-not $hasHWInfo) {
+    Write-Host ""
+    Write-Host "  [..] HWiNFO64 not found. Installing for detailed hardware sensors..." -ForegroundColor Yellow
+    winget install --id REALiX.HWiNFO --silent --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "  [OK] HWiNFO64 installed." -ForegroundColor Green
+    } else {
+        Write-Host "  [!] HWiNFO64 installation failed. You can install it manually from: https://www.hwinfo.com/" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "  [OK] HWiNFO64 detected." -ForegroundColor Green
+}
+
+# ----------------------------------------------------------------
 # STEP 5 - npm install
 # ----------------------------------------------------------------
 Write-Host ""

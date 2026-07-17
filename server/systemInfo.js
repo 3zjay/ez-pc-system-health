@@ -665,7 +665,7 @@ export async function callGemini(apiKey, payloadContents) {
     throw new Error('Gemini API Key is missing. Please configure it in Settings.');
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${actualKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${actualKey}`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -749,7 +749,7 @@ export async function getHWInfoSensors() {
   try {
     const { stdout } = await execAsync(cmd);
     if (!stdout || !stdout.trim()) {
-      return { active: false, supported: true, message: 'HWiNFO Registry gadget export is not running or has no reported sensors.' };
+      return { active: false, supported: true, message: 'HWiNFO64 is not running or Shared Memory Support is not enabled. Open HWiNFO64 → Settings → check "Shared Memory Support", then restart HWiNFO.' };
     }
 
     const rawData = JSON.parse(stdout);
@@ -778,7 +778,7 @@ export async function getHWInfoSensors() {
     }
 
     if (sensors.length === 0) {
-      return { active: false, supported: true, message: 'No reported sensors found in HWiNFO VSB Registry key.' };
+      return { active: false, supported: true, message: 'HWiNFO Shared Memory has no sensor entries yet. Ensure Shared Memory Support is enabled in HWiNFO64 Settings and at least one sensor is active.' };
     }
 
     return {
@@ -789,7 +789,7 @@ export async function getHWInfoSensors() {
 
   } catch (err) {
     console.error('Error querying HWiNFO Registry:', err.message);
-    return { active: false, supported: true, message: 'Failed to access HWiNFO registry key. Ensure HWiNFO is running.' };
+    return { active: false, supported: true, message: 'Failed to read HWiNFO shared memory. Ensure HWiNFO64 is running with Shared Memory Support enabled in Settings → enable "Shared Memory Support".' };
   }
 }
 
@@ -973,12 +973,39 @@ export async function callLocalOrCloudAI(apiKey, contents, snapshot) {
   const promptText = lastMessageObj.parts[0].text;
   const isAudit = promptText.includes('[SYSTEM METRICS]') || promptText.includes('Please analyze this telemetry.');
 
+  // Compile active snapshot if missing or incomplete
+  let activeSnapshot = snapshot;
+  if (!activeSnapshot || !activeSnapshot.telemetry) {
+    try {
+      const [telemetry, processes, logs] = await Promise.all([
+        getSystemTelemetry(),
+        getProcesses('cpu', 10),
+        getSystemEvents('', 'all', 15)
+      ]);
+      activeSnapshot = { telemetry, processes, logs };
+    } catch (e) {
+      activeSnapshot = {
+        telemetry: {
+          os: { platform: process.platform, distro: os.type(), arch: os.arch(), hostname: os.hostname(), uptimeFormatted: 'unknown' },
+          cpu: { brand: os.cpus()?.[0]?.model || 'unknown', cores: os.cpus()?.length || 1, physicalCores: os.cpus()?.length || 1, loadPercentage: 0, temperature: null, loadPerCore: [] },
+          memory: { usePercentage: 0, used: 0, free: os.freemem(), total: os.totalmem() },
+          disks: [],
+          heaviestFolder: null,
+          homeUsage: [],
+          battery: { hasBattery: false, isCharging: false, percent: 100, acConnected: true, cycleCount: 0 }
+        },
+        processes: [],
+        logs: []
+      };
+    }
+  }
+
   // 1. Try Gemini Cloud AI if API Key is set
   if (actualKey) {
     try {
       const responseText = await callGemini(actualKey, contents);
       if (isAudit) {
-        return { engine: 'gemini', ...parseDiagnosticsResult(responseText, snapshot) };
+        return { engine: 'gemini', ...parseDiagnosticsResult(responseText, activeSnapshot) };
       }
       return { engine: 'gemini', text: responseText };
     } catch (err) {
@@ -1024,7 +1051,7 @@ export async function callLocalOrCloudAI(apiKey, contents, snapshot) {
           const resData = await ollamaResponse.json();
           const responseText = resData.message.content;
           if (isAudit) {
-            return { engine: 'ollama', model: modelName, ...parseDiagnosticsResult(responseText, snapshot) };
+            return { engine: 'ollama', model: modelName, ...parseDiagnosticsResult(responseText, activeSnapshot) };
           }
           return { engine: 'ollama', model: modelName, text: responseText };
         }
@@ -1036,11 +1063,11 @@ export async function callLocalOrCloudAI(apiKey, contents, snapshot) {
 
   // 3. Fallback to Offline Heuristic System
   if (isAudit) {
-    const reportText = runHeuristicDiagnostics(snapshot);
-    return { engine: 'heuristic', ...parseDiagnosticsResult(reportText, snapshot) };
+    const reportText = runHeuristicDiagnostics(activeSnapshot);
+    return { engine: 'heuristic', ...parseDiagnosticsResult(reportText, activeSnapshot) };
   } else {
     // Chat conversation
-    const replyText = runHeuristicChat(promptText, snapshot);
+    const replyText = runHeuristicChat(promptText, activeSnapshot);
     return { engine: 'heuristic', text: replyText };
   }
 }
