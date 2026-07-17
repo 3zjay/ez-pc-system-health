@@ -1209,18 +1209,24 @@ export function parseDiagnosticsResult(rawText, snapshot) {
 
 let cachedHomeUsageData = null;
 let lastHomeUsageScan = 0;
+let isScanningHome = false;
 
-export async function getHomeUsageData() {
-  const now = Date.now();
-  if (cachedHomeUsageData && (now - lastHomeUsageScan) < 30000) {
-    return cachedHomeUsageData;
-  }
+async function runHomeUsageScanInBackground() {
+  if (isScanningHome) return;
+  isScanningHome = true;
 
   const homedir = os.homedir();
   const usage = [];
   try {
     const entries = await fs.promises.readdir(homedir, { withFileTypes: true });
-    const folders = entries.filter(e => e.isDirectory() && !e.name.startsWith('.') && e.name !== 'Library' && e.name !== 'Applications');
+    // Skip hidden folders, Library, AppData, and heavy system/app directories for speed
+    const folders = entries.filter(e => 
+      e.isDirectory() && 
+      !e.name.startsWith('.') && 
+      e.name !== 'Library' && 
+      e.name !== 'Applications' && 
+      e.name.toLowerCase() !== 'appdata'
+    );
     
     for (const f of folders) {
       const fPath = path.join(homedir, f.name);
@@ -1241,9 +1247,19 @@ export async function getHomeUsageData() {
     
     usage.sort((a, b) => b.value - a.value);
     cachedHomeUsageData = usage;
-    lastHomeUsageScan = now;
+    lastHomeUsageScan = Date.now();
   } catch (err) {
     console.error('Failed to resolve home usage directories:', err.message);
+  } finally {
+    isScanningHome = false;
+  }
+}
+
+export async function getHomeUsageData() {
+  const now = Date.now();
+  // Trigger background scan if cache is empty or older than 5 minutes
+  if (!cachedHomeUsageData || (now - lastHomeUsageScan) > 300000) {
+    runHomeUsageScanInBackground();
   }
   return cachedHomeUsageData || [];
 }
